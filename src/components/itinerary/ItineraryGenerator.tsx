@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { 
@@ -9,7 +8,8 @@ import {
   Users, 
   Send,
   Loader2,
-  LocateFixed
+  LocateFixed,
+  Sparkle
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -337,7 +337,7 @@ const ItineraryGenerator = () => {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="mr-2 h-4 w-4" />
+                      <Sparkle className="mr-2 h-4 w-4" />
                       Generate Itinerary
                     </>
                   )}
