@@ -8,6 +8,8 @@ import ItineraryGenerator from "@/components/itinerary/ItineraryGenerator";
 import ExploreBoard from "@/components/explore/ExploreBoard";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<string>("generate");
@@ -33,6 +35,14 @@ const Index = () => {
         <FeaturesSection />
         
         <section className="container mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <Link to="/travel-planner">
+              <Button size="lg" className="mx-auto">
+                Try Our New AI Travel Planner
+              </Button>
+            </Link>
+          </div>
+
           <Tabs defaultValue="generate" className="w-full" onValueChange={handleTabChange}>
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
               <TabsTrigger value="generate">Generate</TabsTrigger>
