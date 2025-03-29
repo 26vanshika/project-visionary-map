@@ -64,9 +64,10 @@ const StandaloneExploreApp = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate itinerary. Please try again.",
+        description: "Failed to generate itinerary. Please make sure your Flask API is running at http://127.0.0.1:5000",
         variant: "destructive"
       });
+      console.error("API error:", error);
     } finally {
       setIsLoading(false);
     }
