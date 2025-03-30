@@ -106,6 +106,7 @@ const ItineraryDisplay = ({
       {chatOpen && (
         <ChatAssistant
           destination={city}
+          itinerary={itinerary}
           onClose={() => setChatOpen(false)}
         />
       )}
@@ -113,14 +114,10 @@ const ItineraryDisplay = ({
   );
 };
 
-// Helper function to format the itinerary text with HTML and convert currency
+// Helper function to format the itinerary text with HTML
 const formatItinerary = (text: string): string => {
   // Convert markdown-style bold to HTML bold
   let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-  // Ensure dollar amounts are converted to rupees
-  formatted = formatted.replace(/\$(\d+)/g, '₹$1');
-  formatted = formatted.replace(/USD/g, 'INR');
   
   // Convert line breaks to HTML breaks
   formatted = formatted.replace(/\n/g, '<br />');

@@ -10,6 +10,7 @@ import ItineraryDisplay from './components/ItineraryDisplay';
 const StandaloneExploreApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedItinerary, setGeneratedItinerary] = useState<string | null>(null);
+  const [itinerarySummary, setItinerarySummary] = useState<string | null>(null);
   const [weatherInfo, setWeatherInfo] = useState<string | null>(null);
   const [city, setCity] = useState('');
   const { toast } = useToast();
@@ -49,6 +50,14 @@ const StandaloneExploreApp = () => {
       setGeneratedItinerary(result.itinerary);
       setWeatherInfo(result.weather);
       
+      // Extract the first paragraph as a summary if available
+      if (result.summary) {
+        setItinerarySummary(result.summary);
+      } else if (result.itinerary) {
+        const firstParagraph = result.itinerary.split('\n\n')[0];
+        setItinerarySummary(firstParagraph || `Your personalized itinerary for ${formData.city}`);
+      }
+      
       toast({
         title: "Itinerary generated!",
         description: `Your trip to ${formData.city} has been planned.`,
@@ -77,7 +86,7 @@ const StandaloneExploreApp = () => {
   
   return (
     <AppLayout 
-      title="Travel Explorer" 
+      title="UnTangled Travel Explorer" 
       description="Generate personalized travel itineraries and save your favorite destinations"
     >
       {!generatedItinerary ? (
@@ -96,6 +105,7 @@ const StandaloneExploreApp = () => {
         <ItineraryDisplay 
           city={city}
           itinerary={generatedItinerary}
+          itinerarySummary={itinerarySummary}
           weatherInfo={weatherInfo}
           onCreatePin={handleCreatePin}
           onNewPlan={() => setGeneratedItinerary(null)}

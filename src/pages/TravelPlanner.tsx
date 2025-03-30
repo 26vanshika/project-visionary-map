@@ -67,7 +67,9 @@ const TravelPlanner = () => {
       setWeatherInfo(result.weather);
       
       // Extract the first paragraph as a summary if available
-      if (result.itinerary) {
+      if (result.summary) {
+        setItinerarySummary(result.summary);
+      } else if (result.itinerary) {
         const firstParagraph = result.itinerary.split('\n\n')[0];
         setItinerarySummary(firstParagraph || `Your personalized itinerary for ${formData.city}`);
       }
@@ -102,7 +104,7 @@ const TravelPlanner = () => {
       <Header />
       
       <main className="flex-1 container mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold mb-8 text-center">Travel Planner</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center">UnTangled Travel Planner</h1>
         <p className="text-center text-muted-foreground mb-8">
           Plan your perfect trip with our AI-powered travel assistant
         </p>

@@ -23,7 +23,19 @@ export async function generateItinerary(params: GenerateItineraryParams) {
       throw new Error('Network response was not ok');
     }
     
-    return await response.json();
+    const data = await response.json();
+    
+    // Extract the first paragraph as summary if available
+    let summary = null;
+    if (data.itinerary) {
+      const firstParagraph = data.itinerary.split('\n\n')[0];
+      summary = firstParagraph;
+    }
+    
+    return {
+      ...data,
+      summary
+    };
   } catch (error) {
     console.error('Error generating itinerary:', error);
     throw error;

@@ -8,10 +8,11 @@ import { Loader2, Send, X } from "lucide-react";
 
 interface ChatAssistantProps {
   destination: string;
+  itinerary: string;
   onClose: () => void;
 }
 
-const ChatAssistant: React.FC<ChatAssistantProps> = ({ destination, onClose }) => {
+const ChatAssistant: React.FC<ChatAssistantProps> = ({ destination, itinerary, onClose }) => {
   const [messages, setMessages] = useState<{ user: string; bot: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ destination, onClose }) =
     setLoading(true);
 
     try {
-      const response = await chatWithAssistant(input, destination);
+      const response = await chatWithAssistant(input, itinerary);
       setMessages(
         newMessages.map((msg, index) =>
           index === newMessages.length - 1 ? { ...msg, bot: response.response } : msg
