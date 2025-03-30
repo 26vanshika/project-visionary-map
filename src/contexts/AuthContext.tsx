@@ -1,17 +1,18 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase, getCurrentUser } from '@/lib/supabase';
+import { User } from '@supabase/supabase-js';
 
-type User = {
+type AuthUser = {
   id: string;
   email: string;
   user_metadata: {
-    full_name: string;
+    full_name?: string;
   };
 } | null;
 
 type AuthContextType = {
-  user: User;
+  user: AuthUser;
   isLoading: boolean;
 };
 
@@ -21,7 +22,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<AuthUser>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -32,8 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (error) {
           console.error('Error fetching user:', error);
-        } else {
-          setUser(user as User);
+        } else if (user) {
+          // Cast user to AuthUser type with optional full_name
+          setUser({
+            id: user.id,
+            email: user.email || '',
+            user_metadata: {
+              full_name: user.user_metadata?.full_name || ''
+            }
+          });
         }
       } catch (error) {
         console.error('Unexpected error:', error);
@@ -46,7 +54,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for auth state changes
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user as User || null);
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          user_metadata: {
+            full_name: session.user.user_metadata?.full_name || ''
+          }
+        });
+      } else {
+        setUser(null);
+      }
       setIsLoading(false);
     });
 
