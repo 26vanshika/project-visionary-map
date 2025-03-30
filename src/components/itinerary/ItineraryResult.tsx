@@ -220,6 +220,7 @@ const ItineraryResult = ({ itinerary }: ItineraryResultProps) => {
         <ChatAssistant
           destination={itinerary.destination}
           onClose={() => setChatOpen(false)}
+          itinerary={JSON.stringify(itinerary)}
         />
       )}
     </div>

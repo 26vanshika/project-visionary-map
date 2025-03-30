@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { 
-  MapPin, 
   Calendar, 
   DollarSign, 
   Heart, 
   Users, 
-  Send,
   Loader2,
   LocateFixed,
   Sparkle
@@ -17,6 +15,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } fr
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import ItineraryResult from "./ItineraryResult";
+import { generateItinerary } from "@/lib/api";
 
 type FormValues = {
   destination: string;
@@ -48,93 +47,61 @@ const ItineraryGenerator = () => {
   const onSubmit = async (data: FormValues) => {
     setIsGenerating(true);
     
-    // Simulate API call to AI service
-    setTimeout(() => {
-      setIsGenerating(false);
+    try {
+      // Convert interests string to array
+      const interestsArray = data.interests
+        .split(',')
+        .map(interest => interest.trim())
+        .filter(interest => interest.length > 0);
       
-      // Mock data for demo purposes
-      setGeneratedItinerary({
+      // Call the API to generate itinerary
+      const response = await generateItinerary({
+        city: data.destination,
+        interests: interestsArray,
+        budget: data.budget,
+        people: data.travelers,
+        from_date: data.startDate,
+        to_date: data.endDate,
+        comments: data.additionalInfo
+      });
+      
+      // Format the response into the expected structure for the ItineraryResult component
+      const formattedItinerary = {
         destination: data.destination,
         dates: {
           start: data.startDate,
           end: data.endDate,
         },
         travelers: parseInt(data.travelers),
-        totalBudget: `$${parseInt(data.budget) * parseInt(data.travelers)}`,
-        dailyBudget: `$${Math.round(parseInt(data.budget) / ((new Date(data.endDate).getTime() - new Date(data.startDate).getTime()) / (1000 * 60 * 60 * 24)))}`,
+        totalBudget: `₹${parseInt(data.budget) * parseInt(data.travelers)}`,
+        dailyBudget: `₹${Math.round(parseInt(data.budget) / ((new Date(data.endDate).getTime() - new Date(data.startDate).getTime()) / (1000 * 60 * 60 * 24)))}`,
         weather: {
-          forecast: "Mostly sunny, 70-80°F",
-          rainyDays: 1,
+          forecast: response.weather || "Weather data not available",
+          rainyDays: 0,
         },
         days: [
-          {
-            date: data.startDate,
-            weather: "Sunny, 75°F",
-            activities: [
-              {
-                time: "09:00 AM",
-                name: "Arrive at destination",
-                location: "Airport",
-                notes: "Check in at hotel first",
-                cost: "$0",
-                weatherSensitive: false,
-              },
-              {
-                time: "12:00 PM",
-                name: "Lunch at local restaurant",
-                location: "Downtown",
-                notes: "Highly rated on TripAdvisor",
-                cost: "$30 per person",
-                weatherSensitive: false,
-              },
-              {
-                time: "02:00 PM",
-                name: "Visit main attractions",
-                location: "City center",
-                notes: "Guided tour available",
-                cost: "$25 per person",
-                weatherSensitive: true,
-              },
-            ],
-          },
-          {
-            date: new Date(new Date(data.startDate).setDate(new Date(data.startDate).getDate() + 1)).toISOString().split('T')[0],
-            weather: "Partly cloudy, 72°F",
-            activities: [
-              {
-                time: "10:00 AM",
-                name: "Outdoor activity",
-                location: "Nature park",
-                notes: "Bring comfortable shoes",
-                cost: "$15 per person",
-                weatherSensitive: true,
-              },
-              {
-                time: "01:00 PM",
-                name: "Lunch at cafe",
-                location: "Historic district",
-                notes: "",
-                cost: "$20 per person",
-                weatherSensitive: false,
-              },
-              {
-                time: "03:00 PM",
-                name: "Museum visit",
-                location: "Cultural district",
-                notes: "Last entry at 4:30 PM",
-                cost: "$18 per person",
-                weatherSensitive: false,
-              },
-            ],
-          }
-        ]
-      });
+          // This is a placeholder. The actual itinerary content is in response.itinerary
+          // and will be displayed in a different format
+        ],
+        rawItinerary: response.itinerary
+      };
+      
+      setGeneratedItinerary(formattedItinerary);
       
       toast({
         title: "Itinerary generated!",
         description: `Your trip to ${data.destination} has been planned.`,
       });
-    }, 3000);
+    } catch (error) {
+      console.error("Error generating itinerary:", error);
+      toast({
+        title: "Error generating itinerary",
+        description: "Please make sure your Flask API is running at http://127.0.0.1:5000",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleUseCurrentLocation = () => {
@@ -146,10 +113,10 @@ const ItineraryGenerator = () => {
     
     // In a real app, you would use the Geolocation API and then reverse geocode
     setTimeout(() => {
-      form.setValue("destination", "San Francisco, CA");
+      form.setValue("destination", "Delhi, India");
       toast({
         title: "Location detected",
-        description: "San Francisco, CA has been set as your destination.",
+        description: "Delhi, India has been set as your destination.",
       });
     }, 1500);
   };

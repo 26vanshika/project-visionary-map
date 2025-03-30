@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, UserPlus } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { signUp } from "@/lib/supabase";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -25,21 +26,32 @@ const Signup = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate registration process
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { data, error } = await signUp(email, password, name);
+      
+      if (error) {
+        throw error;
+      }
+      
       toast({
         title: "Account created",
         description: "Welcome to UnTangled! Your account has been created.",
       });
-      // Store a simple auth token in localStorage (in a real app, use secure auth)
-      localStorage.setItem("untangled-user", JSON.stringify({ name, email }));
+      
       navigate("/");
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: "Signup failed",
+        description: error.message || "An error occurred during signup",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

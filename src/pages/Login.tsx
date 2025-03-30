@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, UserCheck } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { signIn } from "@/lib/supabase";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,21 +25,32 @@ const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication process
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { data, error } = await signIn(email, password);
+      
+      if (error) {
+        throw error;
+      }
+      
       toast({
         title: "Login successful",
         description: "Welcome back to UnTangled!",
       });
-      // Store a simple auth token in localStorage (in a real app, use secure auth)
-      localStorage.setItem("untangled-user", JSON.stringify({ email }));
+      
       navigate("/");
-    }, 1500);
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.message || "Please check your credentials",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
