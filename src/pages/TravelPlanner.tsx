@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import TravelForm from "@/components/travel/TravelForm";
@@ -7,13 +7,29 @@ import ItineraryDisplay from "@/components/travel/ItineraryDisplay";
 import { generateItinerary } from "@/lib/api";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { useNavigate } from "react-router-dom";
 
 const TravelPlanner = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedItinerary, setGeneratedItinerary] = useState<string | null>(null);
+  const [itinerarySummary, setItinerarySummary] = useState<string | null>(null);
   const [weatherInfo, setWeatherInfo] = useState<string | null>(null);
   const [city, setCity] = useState('');
   const { toast } = useToast();
+  const navigate = useNavigate();
+  
+  // Check if user is logged in
+  useEffect(() => {
+    const user = localStorage.getItem("untangled-user");
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to access the travel planner",
+        variant: "destructive"
+      });
+      navigate("/login");
+    }
+  }, [navigate, toast]);
 
   const handleFormSubmit = async (formData: {
     city: string;
@@ -49,6 +65,12 @@ const TravelPlanner = () => {
       
       setGeneratedItinerary(result.itinerary);
       setWeatherInfo(result.weather);
+      
+      // Extract the first paragraph as a summary if available
+      if (result.itinerary) {
+        const firstParagraph = result.itinerary.split('\n\n')[0];
+        setItinerarySummary(firstParagraph || `Your personalized itinerary for ${formData.city}`);
+      }
       
       toast({
         title: "Itinerary generated!",
@@ -101,6 +123,7 @@ const TravelPlanner = () => {
           <ItineraryDisplay 
             city={city}
             itinerary={generatedItinerary}
+            itinerarySummary={itinerarySummary}
             weatherInfo={weatherInfo}
             onCreatePin={handleCreatePin}
             onNewPlan={() => setGeneratedItinerary(null)}

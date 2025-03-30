@@ -59,25 +59,52 @@ const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
 
   const interestOptions = [
     "History", "Food", "Nature", "Adventure", "Culture", 
-    "Relaxation", "Shopping", "Nightlife", "Art", "Sports"
+    "Relaxation", "Shopping", "Nightlife", "Art", "Spirituality"
+  ];
+
+  const popularIndianDestinations = [
+    "Jaipur, Rajasthan",
+    "Goa",
+    "Varanasi, Uttar Pradesh",
+    "Delhi",
+    "Mumbai, Maharashtra",
+    "Agra, Uttar Pradesh",
+    "Rishikesh, Uttarakhand",
+    "Darjeeling, West Bengal",
+    "Kochi, Kerala",
+    "Udaipur, Rajasthan"
   ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="city">Destination City *</Label>
-          <Input
-            id="city"
-            placeholder="e.g., Paris, Tokyo, New York"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            required
-          />
+          <Label htmlFor="city">Destination *</Label>
+          <Select value={city} onValueChange={setCity}>
+            <SelectTrigger id="city">
+              <SelectValue placeholder="Select a destination" />
+            </SelectTrigger>
+            <SelectContent>
+              {popularIndianDestinations.map((dest) => (
+                <SelectItem key={dest} value={dest}>
+                  {dest}
+                </SelectItem>
+              ))}
+              <SelectItem value="custom">Other (type below)</SelectItem>
+            </SelectContent>
+          </Select>
+          {city === "custom" && (
+            <Input
+              placeholder="Enter destination"
+              className="mt-2"
+              onChange={(e) => setCity(e.target.value)}
+              required
+            />
+          )}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="budget">Budget (per person) *</Label>
+          <Label htmlFor="budget">Budget (₹) *</Label>
           <Input
             id="budget"
             placeholder="e.g., 50000"
@@ -86,6 +113,7 @@ const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
             onChange={(e) => setBudget(e.target.value)}
             required
           />
+          <p className="text-xs text-muted-foreground">Budget in Indian Rupees (₹)</p>
         </div>
         
         <div className="space-y-2">
@@ -113,7 +141,7 @@ const TravelForm = ({ onSubmit, isLoading }: TravelFormProps) => {
         <div className="space-y-2">
           <Label htmlFor="people">Number of Travelers</Label>
           <Select value={people} onValueChange={setPeople}>
-            <SelectTrigger>
+            <SelectTrigger id="people">
               <SelectValue placeholder="Select number of people" />
             </SelectTrigger>
             <SelectContent>

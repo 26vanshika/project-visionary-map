@@ -17,6 +17,7 @@ import ChatAssistant from "@/components/itinerary/ChatAssistant";
 interface ItineraryDisplayProps {
   city: string;
   itinerary: string;
+  itinerarySummary: string | null;
   weatherInfo: string | null;
   onCreatePin: () => void;
   onNewPlan: () => void;
@@ -25,6 +26,7 @@ interface ItineraryDisplayProps {
 const ItineraryDisplay = ({ 
   city, 
   itinerary, 
+  itinerarySummary,
   weatherInfo, 
   onCreatePin, 
   onNewPlan 
@@ -44,6 +46,20 @@ const ItineraryDisplay = ({
           Save Itinerary
         </Button>
       </div>
+      
+      {itinerarySummary && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center text-lg">
+              <Calendar className="h-5 w-5 mr-2 text-primary" />
+              Trip Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{itinerarySummary}</p>
+          </CardContent>
+        </Card>
+      )}
       
       {weatherInfo && (
         <WeatherInfo weatherInfo={weatherInfo} />
@@ -97,10 +113,14 @@ const ItineraryDisplay = ({
   );
 };
 
-// Helper function to format the itinerary text with HTML
+// Helper function to format the itinerary text with HTML and convert currency
 const formatItinerary = (text: string): string => {
   // Convert markdown-style bold to HTML bold
   let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Ensure dollar amounts are converted to rupees
+  formatted = formatted.replace(/\$(\d+)/g, '₹$1');
+  formatted = formatted.replace(/USD/g, 'INR');
   
   // Convert line breaks to HTML breaks
   formatted = formatted.replace(/\n/g, '<br />');

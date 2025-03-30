@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Map, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,20 +24,24 @@ const Header = () => {
       scrolled ? "bg-background/80 backdrop-blur-sm shadow-sm py-3" : "bg-transparent py-5"
     )}>
       <div className="container flex justify-between items-center">
-        <div className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2">
           <Map className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">TravelAI</span>
-        </div>
+          <span className="font-bold text-xl">UnTangled</span>
+        </Link>
         
         <nav className="hidden md:flex items-center space-x-6">
           <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Features</a>
           <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">How It Works</a>
-          <Button variant="outline" size="sm" className="mr-2">
-            Login
-          </Button>
-          <Button size="sm">
-            Sign Up
-          </Button>
+          <Link to="/login">
+            <Button variant="outline" size="sm" className="mr-2">
+              Login
+            </Button>
+          </Link>
+          <Link to="/signup">
+            <Button size="sm">
+              Sign Up
+            </Button>
+          </Link>
         </nav>
         
         <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -63,12 +68,16 @@ const Header = () => {
               How It Works
             </a>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="outline" size="sm">
-                Login
-              </Button>
-              <Button size="sm">
-                Sign Up
-              </Button>
+              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full">
+                  Login
+                </Button>
+              </Link>
+              <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                <Button size="sm" className="w-full">
+                  Sign Up
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
